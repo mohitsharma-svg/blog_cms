@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "@yaireo/tagify/dist/tagify.css";
+
+/* =========================
+   DESIGN TOKENS (LIGHT ONLY)
+========================= */
+:root {
+  --background: #f5f9ff;
+  --foreground: #0f172a;
+
+  --primary: #2563eb;
+  --primary-soft: #dbeafe;
+
+  --card: rgba(255, 255, 255, 0.75);
+  --border: rgba(15, 23, 42, 0.08);
+  --muted: #64748b;
+}
+
+/* =========================
+   BASE
+========================= */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  transition: all 0.25s ease;
+}
+
+/* =========================
+   GLASS CARD SYSTEM
+========================= */
+.glass {
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  outline: none;
+  color: var(--foreground);
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+/* =========================
+   FIELD WRAPPER
+========================= */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  transition: 0.2s;
+  background: white;
+}
+
+.field:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* =========================
+   BUTTON SYSTEM
+========================= */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  transform: scale(1.01);
+}
+
+.btn-primary:active {
+  transform: scale(0.99);
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ck-editor__editable {
+  min-height: 250px;
+  color: black !important;
+  background: white !important;
+}
+
+.ck-toolbar {
+  background: white !important;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.ck-content {
+  color: black !important;
+}
