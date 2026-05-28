@@ -13,7 +13,7 @@ interface Props {
 
 async function getPost(slug: string) {
   try {
-    const res = await api.get(`/posts/slug/${slug}`);
+    const res = await api.get(`/blogs/slug/${slug}`);
     console.log(res.data)
     return res.data;
   } catch (error) {

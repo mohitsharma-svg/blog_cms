@@ -26,8 +26,6 @@ export default function Blogs() {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-
-    // ✅ CACHE (IMPORTANT FIX)
     const cache = useRef<Record<number, Blog[]>>({});
 
     const fetchPosts = async (pageNumber: number = 1) => {
@@ -41,7 +39,7 @@ export default function Blogs() {
             setLoading(true);
 
             const res = await api.get(
-                `/posts/?page=${pageNumber}&limit=6`
+                `/blogs/?page=${pageNumber}&limit=6`
             );
 
             const response = res.data;
@@ -49,10 +47,7 @@ export default function Blogs() {
             const activePosts = response.data.filter(
                 (post: Blog) => post.status === "active"
             );
-
-            // ✅ STORE IN CACHE
             cache.current[pageNumber] = activePosts;
-
             setBlogs(activePosts);
             setTotalPages(response.total_pages);
         } catch (error) {

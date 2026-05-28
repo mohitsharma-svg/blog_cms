@@ -2,14 +2,22 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Copy dependency files first
 COPY package*.json ./
 
-RUN npm install
+# Install dependencies
+RUN npm ci
 
+# Copy project files
 COPY . .
 
-RUN npm run build
+# Disable telemetry (clean logs)
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Hot reload inside Docker
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

@@ -1,16 +1,21 @@
 #!/bin/sh
+set -e
 
-echo "⏳ Waiting for Postgres..."
+echo "⏳ Waiting for database..."
 
-while ! nc -z postgres_db 5432; do
+until nc -z postgres_db 5432; do
   sleep 1
 done
 
-echo "✔ Postgres is ready"
+echo "✅ Database started"
 
 echo "📦 Running migrations..."
 alembic upgrade head
 
+if [ "$RUN_SEED" = "true" ]; then
+  echo "🌱 Running seeders..."
+  python -m app.seeds.run_seed
+fi
 
-echo "🚀 Starting FastAPI..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+echo "🚀 Starting server..."
+uvicorn app.main:app --host 0.0.0.0 --port 8000

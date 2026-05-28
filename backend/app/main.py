@@ -12,6 +12,7 @@ from app.api.routes.post import router as post_router
 from app.api.routes.role import router as role_router
 from app.api.routes.permission import router as permission_router
 from app.api.dashboard import router as dashboard_router
+from app.api.blog import router as blog_router
 
 
 # Create tables
@@ -32,6 +33,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://0.0.0.0:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -39,6 +41,7 @@ app.add_middleware(
 )
 
 # Routers
+app.include_router(blog_router)
 app.include_router(auth_router)
 app.include_router(role_router)
 app.include_router(permission_router)
