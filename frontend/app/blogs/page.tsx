@@ -88,6 +88,7 @@ export default function Blogs() {
         return `${years} year${years > 1 ? "s" : ""} ago`;
     };
 
+
     return (
         <>
             <Header />
@@ -120,31 +121,30 @@ export default function Blogs() {
                         {blogs.map((blog) => {
                             const fixedImageUrl = blog.image_url
                                 ? blog.image_url.replace(
-                                      "127.0.0.1",
-                                      "localhost"
-                                  )
+                                    "127.0.0.1",
+                                    "localhost"
+                                )
                                 : "";
 
                             const image =
                                 fixedImageUrl &&
-                                fixedImageUrl.startsWith("http")
+                                    fixedImageUrl.startsWith("http")
                                     ? fixedImageUrl
                                     : fixedImageUrl
-                                    ? `${API_BASE_URL}${
-                                          fixedImageUrl.startsWith("/")
-                                              ? ""
-                                              : "/"
-                                      }${fixedImageUrl}`
-                                    : "/no-image.png";
+                                        ? `${API_BASE_URL}${fixedImageUrl.startsWith("/")
+                                            ? ""
+                                            : "/"
+                                        }${fixedImageUrl}`
+                                        : "/no-image.png";
 
                             const created_date = blog.created_at
                                 ? new Date(
-                                      blog.created_at
-                                  ).toLocaleDateString("en-IN", {
-                                      day: "2-digit",
-                                      month: "long",
-                                      year: "numeric",
-                                  })
+                                    blog.created_at
+                                ).toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                })
                                 : "Recently";
 
                             const timeAgo = blog.created_at
@@ -192,11 +192,10 @@ export default function Blogs() {
                             <button
                                 key={p}
                                 onClick={() => fetchPosts(p)}
-                                className={`w-10 h-10 rounded-full border ${
-                                    page === p
+                                className={`w-10 h-10 rounded-full border ${page === p
                                         ? "bg-black text-white"
                                         : "bg-white text-black hover:bg-gray-100"
-                                }`}
+                                    }`}
                             >
                                 {p}
                             </button>

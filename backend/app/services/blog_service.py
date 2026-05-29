@@ -1,17 +1,9 @@
-import os
-import uuid
-
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-from app.models.post import Post
 from app.repositories import blog_repository
 
 
-# =========================
-# PUBLIC ALL BLOG POSTS
-# =========================
-def get_posts(
+def get_blogs(
     db: Session,
     page: int = 1,
     limit: int = 10

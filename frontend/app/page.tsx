@@ -27,14 +27,11 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // ✅ CACHE (IMPORTANT FIX)
   const cache = useRef<Record<number, Post[]>>({});
 
   const fetchPosts = async (pageNumber: number = 1) => {
     try {
       setPage(pageNumber);
-
-      // ✅ instant render from cache (NO FLICKER)
       if (cache.current[pageNumber]) {
         setPosts(cache.current[pageNumber]);
         return;
@@ -43,7 +40,7 @@ export default function HomePage() {
       setLoading(true);
 
       const res = await api.get(
-        `/posts/?page=${pageNumber}&limit=6`
+        `/blogs/?page=${pageNumber}&limit=6`
       );
 
       const response = res.data;

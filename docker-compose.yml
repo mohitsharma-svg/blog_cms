@@ -63,7 +63,7 @@ services:
 
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres_db:5432/blog_cms
-      RUN_SEED: "true"
+      RUN_SEED: "false"
 
     ports:
       - "8000:8000"
