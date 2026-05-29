@@ -28,7 +28,6 @@ class RoleResponse(Role):
     status: str
     permissions: List[PermissionResponse] = []
 
-
     @field_validator('id')
     @classmethod
     def enc_id(enc, v):

@@ -202,30 +202,45 @@ export default function UsersPage() {
     }, []);
 
 
-    const openRoleModal = (user: User) => {
+    const openRoleModal = (user: any) => {
         setSelectedUser(user);
-        setSelectedRoles([]); // or prefill if backend returns roles
+        setSelectedRoles(
+            user.roles?.map((role: any) => Number(role.id)) || []
+        );
+
         setShowRoleModal(true);
     };
 
 
     const handleAssignRoles = async () => {
-        if (!selectedUser) return;
+        if (!selectedUser || selectedRoles.length === 0) {
+            toast.error("Please select at least one role");
+            return;
+        }
 
         try {
-            await api.post(
-                `/users/assign_role/${selectedUser.id}`,
-                {
-                    role_ids: selectedRoles,
-                }
+            // Convert all role ids to numbers (safe handling)
+            const roleIds = selectedRoles.map((id) => Number(id));
+
+            await api.post(`/users/assign_role/${selectedUser.id}`, {
+                role_ids: roleIds, // supports single + multiple roles
+            });
+
+            toast.success(
+                roleIds.length > 1
+                    ? "Roles assigned successfully"
+                    : "Role assigned successfully"
             );
 
-            toast.success("Roles assigned successfully");
             setShowRoleModal(false);
+            setSelectedRoles([]);
             fetchUsers();
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            toast.error("Failed to assign roles");
+
+            toast.error(
+                err?.response?.data?.message || "Failed to assign roles"
+            );
         }
     };
 
@@ -296,47 +311,156 @@ export default function UsersPage() {
 
 
             {showRoleModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white w-[400px] p-5 rounded-xl shadow-lg space-y-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+                    <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
 
-                        <h2 className="text-lg font-semibold">
-                            Assign Roles to {selectedUser.name}
-                        </h2>
+                        {/* Header */}
+                        <div className="border-b px-6 py-4">
+                            <h2 className="text-xl font-semibold text-gray-800">
+                                Assign Roles
+                            </h2>
 
-                        <div className="space-y-2 max-h-[200px] overflow-auto">
-                            {roles.map((role) => (
-                                <label key={role.id} className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedRoles.includes(role.id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedRoles([...selectedRoles, role.id]);
-                                            } else {
-                                                setSelectedRoles(
-                                                    selectedRoles.filter((id) => id !== role.id)
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    {role.name}
-                                </label>
-                            ))}
+                            <p className="text-sm text-gray-500 mt-1">
+                                Manage roles for{" "}
+                                <span className="font-medium text-gray-700">
+                                    {selectedUser.name}
+                                </span>
+                            </p>
                         </div>
 
-                        <div className="flex justify-end gap-2 pt-3">
+                        {/* Selected Roles */}
+                        <div className="px-6 pt-4">
+                            <p className="text-sm font-medium text-gray-600 mb-2">
+                                Selected Roles
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                                {selectedRoles.length > 0 ? (
+                                    selectedRoles.map((roleId) => {
+                                        const role = roles.find(
+                                            (r) => Number(r.id) === Number(roleId)
+                                        );
+
+                                        return (
+                                            <span
+                                                key={roleId}
+                                                className="flex items-center gap-2 rounded-full bg-blue-100 text-blue-700 px-3 py-1 text-sm font-medium"
+                                            >
+                                                {role?.name}
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSelectedRoles((prev) =>
+                                                            prev.filter(
+                                                                (id) =>
+                                                                    Number(id) !== Number(roleId)
+                                                            )
+                                                        )
+                                                    }
+                                                    className="text-blue-500 hover:text-red-500"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </span>
+                                        );
+                                    })
+                                ) : (
+                                    <span className="text-sm text-gray-400">
+                                        No roles selected
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Roles List */}
+                        <div className="px-6 py-4">
+                            <p className="text-sm font-medium text-gray-600 mb-3">
+                                Available Roles
+                            </p>
+
+                            <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
+                                {roles.map((role) => {
+                                    const roleId = Number(role.id);
+
+                                    // FIXED CHECKED ISSUE
+                                    const isSelected = selectedRoles.some(
+                                        (id) => Number(id) === roleId
+                                    );
+
+                                    return (
+                                        <label
+                                            key={role.id}
+                                            className={`flex items-center justify-between rounded-xl border px-4 py-3 cursor-pointer transition-all duration-200
+                                ${isSelected
+                                                    ? "border-blue-500 bg-blue-50"
+                                                    : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedRoles((prev) => {
+                                                                // prevent duplicate
+                                                                if (
+                                                                    prev.some(
+                                                                        (id) =>
+                                                                            Number(id) === roleId
+                                                                    )
+                                                                ) {
+                                                                    return prev;
+                                                                }
+
+                                                                return [...prev, roleId];
+                                                            });
+                                                        } else {
+                                                            setSelectedRoles((prev) =>
+                                                                prev.filter(
+                                                                    (id) =>
+                                                                        Number(id) !== roleId
+                                                                )
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="h-4 w-4 accent-blue-600"
+                                                />
+
+                                                <span className="text-sm font-medium text-gray-700">
+                                                    {role.name}
+                                                </span>
+                                            </div>
+
+                                            {isSelected && (
+                                                <span className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                                                    Selected
+                                                </span>
+                                            )}
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex justify-end gap-3 border-t px-6 py-4 bg-gray-50">
                             <button
-                                onClick={() => setShowRoleModal(false)}
-                                className="px-3 py-1 rounded bg-gray-200"
+                                onClick={() => {
+                                    setShowRoleModal(false);
+                                    setSelectedRoles([]);
+                                }}
+                                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
                             >
                                 Cancel
                             </button>
 
                             <button
                                 onClick={handleAssignRoles}
-                                className="px-3 py-1 rounded bg-blue-600 text-white"
+                                className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition shadow-md"
                             >
-                                Save
+                                Save Roles
                             </button>
                         </div>
                     </div>

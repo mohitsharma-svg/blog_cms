@@ -28,7 +28,7 @@ def get_users(
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
-    user_id: int,
+    user_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(require_permission("user.view"))
 ):
@@ -40,7 +40,7 @@ def get_user(
 
 @router.put("/update/{user_id}", response_model=UserResponse)
 def update_user(
-    user_id: int,
+    user_id: str,
     user_data: UserUpdate,
     db: Session = Depends(get_db),
     current_user = Depends(require_permission("user.update"))
@@ -49,7 +49,7 @@ def update_user(
 
 @router.get("/status/{user_id}", response_model=UserResponse)
 def change_status(
-    user_id: int,
+    user_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(require_permission("user.toggle_status"))
 ):
@@ -66,7 +66,7 @@ def assign_role(
 
 @router.delete("/delete/{user_id}")
 def delete_user(
-    user_id: int,
+    user_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(require_permission("user.delete"))
 ):
